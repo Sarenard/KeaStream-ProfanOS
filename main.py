@@ -40,14 +40,16 @@ class Instruction:
     name: str
     args: List[Element]
     
-def add2int(x:Element, y:Element) -> Element:
+def add2int(pile:Pile) -> None:
+    x = remove_pile(pile)
+    y = remove_pile(pile)
     if x.data_type == 0 and y.data_type == 0:
-        return Element(0, x.data_int + y.data_int, "")
+        add_pile(pile, Element(0, x.data_int + y.data_int, ""))
 
-def afficher(x:Element) -> None:
+def afficher(pile:Pile) -> None:
+    x = remove_pile(pile)
     if x.data_type == 0:
         print(x.data_int)
-    return None
 
 buildins_names = [["add", "+"], ["print"]]
 buildins_funcs = [Function(2, 1, add2int), Function(1, 0, afficher)]
@@ -111,13 +113,16 @@ def run(liste_instructions:List[Instruction]) -> None:
         if inst.name == "addnb":
             add_pile(stack, inst.args[0])
         elif inst.name == "cmd":
-            for i in range(len(buildins_names)):
-                pass
+            for liste_id in range(len(buildins_names)):
+                for element_id in range(len(buildins_names[liste_id])):
+                    if inst.args[0].data_str == buildins_names[liste_id][element_id]:
+                        if stack.size >= buildins_funcs[liste_id].nb_args:
+                            buildins_funcs[liste_id].function(stack)
         elif inst.name == "fleche":
             pass
 
 if __name__ == "__main__":
-    code = """1,2>>+>print"""
+    code = """1,2,3,4>>>>+,+>+>print"""
     liste_instructions = []
     compileall(code, liste_instructions)
     run(liste_instructions)
