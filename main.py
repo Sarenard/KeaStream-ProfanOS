@@ -1,28 +1,27 @@
-from dataclasses import dataclass
 from typing import List
 
-@dataclass
 class Function:
-    nb_args: int
-    nb_return: int
-    function: int # function pointer
+    def __init__(self, nb_args: int, nb_return: int, function: int):
+        self.nb_args:int = nb_args
+        self.nb_return:int = nb_return
+        self.function:int = function
 
-@dataclass
 class Element:
-    data_type: int
-    data_int: int
-    data_str: str
+    def __init__(self, data_type: int, data_int: int, data_str: str):
+        self.data_type: int = data_type
+        self.data_int: int = data_int
+        self.data_str: str = data_str
     def __repr__(self):
         if self.data_type == 0:
             return f"int({self.data_int})"
         elif self.data_type == 1:
             return f"str(\"{self.data_str}\")"
 
-@dataclass
 class Pile:
-    size_max: int
-    elements: List[Element]
-    size: int = 0
+    def __init__(self, size_max:int, elements: List[Element]):
+        self.elements:List[Element] = []
+        self.size_max:int = size_max
+        self.size:int = 0
 
 def add_pile(pile:Pile, element:Element) -> None:
     if pile.size == pile.size_max:
@@ -35,19 +34,21 @@ def remove_pile(pile) -> Element:
     pile.size -= 1
     return pile.elements.pop()
 
-@dataclass
 class Instruction:
-    name: str
-    args: List[Element]
+    def __init__(self, name:str, args:List[Element]):
+        self.name:str = name
+        self.args:List[Element] = args
+    def __repr__(self):
+        return f"Instruction({self.name}, {self.args})"
     
-def add2int(pile:Pile) -> None:
-    x = remove_pile(pile)
-    y = remove_pile(pile)
+def add2int(pile:Pile, liste_args:List[Element]) -> None:
+    x = remove_pile(liste_args)
+    y = remove_pile(liste_args)
     if x.data_type == 0 and y.data_type == 0:
         add_pile(pile, Element(0, x.data_int + y.data_int, ""))
 
-def afficher(pile:Pile) -> None:
-    x = remove_pile(pile)
+def afficher(pile:Pile, liste_args:List[Element]) -> None:
+    x = remove_pile(liste_args)
     if x.data_type == 0:
         print(x.data_int)
 
@@ -106,23 +107,29 @@ def compileall(code:str, liste_instructions:List[Instruction]) -> None:
 
 def run(liste_instructions:List[Instruction]) -> None:
     stack = Pile(100, [])
+    work_pile = Pile(100, [])
     for i in range(len(liste_instructions)):
         inst:Instruction = liste_instructions[i]
-        print(f"{inst.name + ' '*(10-len(inst.name))} : {inst}") # debug (HARDCODED AS HELL)
-        print(f"stack : {stack.elements}") # debug
+        print(f"{inst.name + ' '*(10-len(inst.name))} : {inst}")
         if inst.name == "addnb":
             add_pile(stack, inst.args[0])
         elif inst.name == "cmd":
             for liste_id in range(len(buildins_names)):
                 for element_id in range(len(buildins_names[liste_id])):
                     if inst.args[0].data_str == buildins_names[liste_id][element_id]:
-                        if stack.size >= buildins_funcs[liste_id].nb_args:
-                            buildins_funcs[liste_id].function(stack)
+                        if work_pile.size >= buildins_funcs[liste_id].nb_args:
+                            buildins_funcs[liste_id].function(stack, work_pile)
         elif inst.name == "fleche":
-            pass
+            for i in range(work_pile.size):
+                add_pile(stack, remove_pile(work_pile))
+            for i in range(inst.args[0].data_int):
+                add_pile(work_pile, remove_pile(stack))
+        print(f"stack     : {stack.elements}")
+        print(f"work_pile : {work_pile.elements}")
+        print()
 
 if __name__ == "__main__":
-    code = """1,2,3,4>>>>+,+>+>print"""
+    code = """1,2,3,4>>>>+,+>>+>print"""
     liste_instructions = []
     compileall(code, liste_instructions)
     run(liste_instructions)
