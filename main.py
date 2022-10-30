@@ -1,13 +1,22 @@
 from dataclasses import dataclass
 from typing import List
 
-liste_buildins = ["+", "add"]
+@dataclass
+class Function:
+    nb_args: int
+    nb_return: int
+    function: int # function pointer
 
 @dataclass
 class Element:
     data_type: int
     data_int: int
     data_str: str
+    def __repr__(self):
+        if self.data_type == 0:
+            return f"int({self.data_int})"
+        elif self.data_type == 1:
+            return f"str(\"{self.data_str}\")"
 
 @dataclass
 class Pile:
@@ -30,6 +39,18 @@ def remove_pile(pile) -> Element:
 class Instruction:
     name: str
     args: List[Element]
+    
+def add2int(x:Element, y:Element) -> Element:
+    if x.data_type == 0 and y.data_type == 0:
+        return Element(0, x.data_int + y.data_int, "")
+
+def afficher(x:Element) -> None:
+    if x.data_type == 0:
+        print(x.data_int)
+    return None
+
+buildins_names = [["add", "+"], ["print"]]
+buildins_funcs = [Function(2, 1, add2int), Function(1, 0, afficher)]
 
 def add_instruction(inst:str, liste_instructions:List[Instruction]) -> None:
     is_num = True
@@ -65,13 +86,19 @@ def compileall(code:str, liste_instructions:List[Instruction]) -> None:
         exit(1)
     index = 0
     buffer = ""
+    nb_fleches = 0
     while index < len(code):
         if code[index] == ">":
             if len(buffer) != 0:
                 add_buffer(buffer, liste_instructions)
                 buffer = ""
-        else:
-            buffer += code[index]
+            nb_fleches += 1
+            index += 1
+            continue
+        if nb_fleches != 0:
+            liste_instructions.append(Instruction("fleche", [Element(0, nb_fleches, "")]))
+            nb_fleches = 0
+        buffer += code[index]
         index += 1
     add_buffer(buffer, liste_instructions)
 
@@ -79,10 +106,15 @@ def run(liste_instructions:List[Instruction]) -> None:
     stack = Pile(100, [])
     for i in range(len(liste_instructions)):
         inst:Instruction = liste_instructions[i]
+        print(f"{inst.name + ' '*(10-len(inst.name))} : {inst}") # debug (HARDCODED AS HELL)
+        print(f"stack : {stack.elements}") # debug
         if inst.name == "addnb":
             add_pile(stack, inst.args[0])
         elif inst.name == "cmd":
-            print(f"command : {inst}")
+            for i in range(len(buildins_names)):
+                pass
+        elif inst.name == "fleche":
+            pass
 
 if __name__ == "__main__":
     code = """1,2>>+>print"""
