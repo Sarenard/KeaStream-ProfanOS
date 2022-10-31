@@ -119,6 +119,9 @@ def run(liste_instructions:List[Instruction]) -> None:
                     if inst.args[0].data_str == buildins_names[liste_id][element_id]:
                         if work_pile.size >= buildins_funcs[liste_id].nb_args:
                             buildins_funcs[liste_id].function(stack, work_pile)
+                        else:
+                            print(f"Erreur, pas assez d'arguments pour la fonction {inst.args[0].data_str}, espected {buildins_funcs[liste_id].nb_args}, reçu {work_pile.size}")
+                            exit(1)
         elif inst.name == "fleche":
             for i in range(work_pile.size):
                 add_pile(stack, remove_pile(work_pile))
