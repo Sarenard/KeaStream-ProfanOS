@@ -41,13 +41,13 @@ class Instruction:
     def __repr__(self):
         return f"Instruction({self.name}, {self.args})"
     
-def add2int(pile:Pile, liste_args:List[Element]) -> None:
+def add2int(pile:Pile, liste_args:Pile) -> None:
     x = remove_pile(liste_args)
     y = remove_pile(liste_args)
     if x.data_type == 0 and y.data_type == 0:
         add_pile(pile, Element(0, x.data_int + y.data_int, ""))
 
-def afficher(pile:Pile, liste_args:List[Element]) -> None:
+def afficher(pile:Pile, liste_args:Pile) -> None:
     x = remove_pile(liste_args)
     if x.data_type == 0:
         print(x.data_int)
