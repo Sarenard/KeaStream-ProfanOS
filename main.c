@@ -109,7 +109,7 @@ void afficher(Pile *pile, Pile *liste_args) {
 
 char *buildins_names[NB_BUILDINS][NB_ALIAS_MAX] = {
     {"add", "+", ""},
-    {"afficher", "", ""}
+    {"print", "afficher", ""}
 };
 Function buildins_functions[NB_BUILDINS] = {
     (Function){2, 1, (int)add2int},
@@ -222,17 +222,17 @@ void run(InstPile *liste_instructions) {
     Pile pile = pile_init(100);
     Pile work_pile = pile_init(100);
     for (int i = 0; i < liste_instructions->top+1; i++) {
-        if (liste_instructions->inst[i].element.data_type == 0) {
-            printf("inst[%d] = Instruction(%s, Element(%d))\n", i, liste_instructions->inst[i].name, liste_instructions->inst[i].element.data_int);
-        } else {
-            printf("inst[%d] = Instruction(%s, Element(\"%s\"))\n", i, liste_instructions->inst[i].name, liste_instructions->inst[i].element.data_string);
-        }
+        // if (liste_instructions->inst[i].element.data_type == 0) {
+        //     printf("inst[%d] = Instruction(%s, Element(%d))\n", i, liste_instructions->inst[i].name, liste_instructions->inst[i].element.data_int);
+        // } else {
+        //     printf("inst[%d] = Instruction(%s, Element(\"%s\"))\n", i, liste_instructions->inst[i].name, liste_instructions->inst[i].element.data_string);
+        // }
         Instruction inst = liste_instructions->inst[i];
         if (!strcmp(inst.name, "addnb")) {
-            printf("addnb\n");
+            // printf("addnb\n");
             pile_push(&pile, inst.element);
         } else if (!strcmp(inst.name, "fleche")) {
-            printf("fleche\n");
+            // printf("fleche\n");
             for (int j=0; j<work_pile.top+1; j++) {
                 pile_push(&pile, work_pile.elements[j]);
             }
@@ -240,11 +240,13 @@ void run(InstPile *liste_instructions) {
                 pile_push(&work_pile, pile_pop(&pile));
             }
         } else if (!strcmp(inst.name, "cmd")) {
-            printf("cmd\n");
+            // printf("cmd\n");
             for (int liste_id = 0; liste_id < NB_BUILDINS; liste_id++) {
                 for (int alias_id = 0; alias_id < NB_ALIAS_MAX; alias_id++) {
                     if (!strcmp(buildins_names[liste_id][alias_id], inst.element.data_string)) {
-                        buildins_functions[liste_id].function;
+                        Function func = buildins_functions[liste_id];
+                        // printf("func = %s\n", buildins_names[liste_id][alias_id]);
+                        ((void (*)(Pile*, Pile*)) func.function)(&pile, &work_pile);
                     }
                 }
             }
@@ -253,7 +255,6 @@ void run(InstPile *liste_instructions) {
 }
 
 int main() {
-    printf("Lancement du programme c\n");
     char *code = "1,2,3,4>>>>+,+>>+>print";
     int code_size = strlen(code);
     InstPile liste_instructions = Instpile_init(code_size);
