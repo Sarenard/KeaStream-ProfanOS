@@ -84,9 +84,6 @@ def add_buffer(buffer1:str, liste_instructions:List[Instruction]) -> None:
     add_instruction(buffer2, liste_instructions)
 
 def compileall(code:str, liste_instructions:List[Instruction]) -> None:
-    if code[len(code)-1] == ">":
-        print("Erreur, on ne peut pas finir par >")
-        exit(1)
     index = 0
     buffer = ""
     nb_fleches = 0
