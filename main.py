@@ -69,13 +69,13 @@ def instruction_from_data(data:str) -> Element:
             is_number = 0
             break
     if is_number:
-        return Instruction("push", Element(0, int(data), ""))
+        return Instruction("push", [Element(0, int(data), "")])
     is_string:int = 1
     if data[0] != "\"" or data[-1] != "\"":
         is_string = 0
     if is_string:
-        return Instruction("push", Element(1, 0, data[1:-1]))
-    return Instruction("cmd", Element(1, 0, data))
+        return Instruction("push", [Element(1, 0, data[1:-1])])
+    return Instruction("cmd", [Element(1, 0, data)])
 
 def compile(code : str, liste_instructions : InstructionPile) -> None:
     code += " "
@@ -88,9 +88,25 @@ def compile(code : str, liste_instructions : InstructionPile) -> None:
             buffer = ""
         else:
             buffer += code[i]
+    # reverse liste_instructions
+    for i in range(liste_instructions.size // 2):
+        tmp:Instruction = liste_instructions.elements[i]
+        liste_instructions.elements[i] = liste_instructions.elements[liste_instructions.size - i - 1]
+        liste_instructions.elements[liste_instructions.size - i - 1] = tmp
+    
 
 def run(liste_instructions : InstructionPile) -> None:
-    pass
+    stack:ElementPile = ElementPile(100, [])
+    for i in range(liste_instructions.size):
+        instruction:Instruction = remove_InstructionPile(liste_instructions)
+        if instruction.name == "push":
+            add_ElementPile(stack, instruction.args[0])
+        elif instruction.name == "cmd":
+            # TODO : recode this with external functions
+            if instruction.args[0].data_str == ".":
+                print(remove_ElementPile(stack))
+            elif instruction.args[0].data_str == "+":
+                add_ElementPile(stack, Element(0, remove_ElementPile(stack).data_int + remove_ElementPile(stack).data_int, ""))
 
 def main():
     code:str = """1 2 + ."""
