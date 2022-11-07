@@ -93,7 +93,6 @@ def compile(code : str, liste_instructions : InstructionPile) -> None:
         tmp:Instruction = liste_instructions.elements[i]
         liste_instructions.elements[i] = liste_instructions.elements[liste_instructions.size - i - 1]
         liste_instructions.elements[liste_instructions.size - i - 1] = tmp
-    
 
 def run(liste_instructions : InstructionPile) -> None:
     stack:ElementPile = ElementPile(100, [])
@@ -109,7 +108,7 @@ def run(liste_instructions : InstructionPile) -> None:
                 add_ElementPile(stack, Element(0, remove_ElementPile(stack).data_int + remove_ElementPile(stack).data_int, ""))
 
 def main():
-    code:str = """1 2 + ."""
+    code:str = """1 2 3 + + ."""
     liste_instructions:InstructionPile = InstructionPile(100, [])
     compile(code, liste_instructions)
     print(liste_instructions)
