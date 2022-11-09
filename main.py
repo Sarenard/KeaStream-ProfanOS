@@ -171,7 +171,7 @@ def run(stack:ElementPile, liste_instructions : InstructionPile) -> None:
                 exit(1)
 
 def main() -> None:
-    code:str = """3 dup if 4 + end . 0 dup if 4 + end ."""
+    code:str = open("code.kea").read().replace("\n", " ")
     print(f"lancement du code : \"{code}\"")
     liste_instructions:InstructionPile = InstructionPile(100, [])
     compile(code, liste_instructions)
