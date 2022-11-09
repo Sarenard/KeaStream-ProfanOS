@@ -1,8 +1,14 @@
+import subprocess
 import os
 
-def print_and_run(command):
-    print(f"| {command}")
+command = "mypy .\main.py"
+print(f"| {command}")
+try:
+    result = subprocess.check_output(command.split(" "))
+except:
+    print("| mypy failed :")
     os.system(command)
-
-print_and_run("gcc main.c -o main.exe")
-print_and_run("main.exe")
+    exit(1)
+command = "python .\main.py"
+print(f"| {command}")
+os.system(command)
